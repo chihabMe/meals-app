@@ -1,23 +1,26 @@
-import { View, Text, StyleSheet } from 'react-native';
-import React from 'react';
-import colors from '../../../utils/colors';
-import { spacing } from '../../../utils/sizes';
+import React, { useEffect, useState } from 'react';
+import { Searchbar } from 'react-native-paper';
+import styled from 'styled-components/native' 
 
-const Headers = () => {
+const Headers:React.FC<{onSearch:(text:string)=>void}> = ({onSearch}) => {
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const onChangeSearch = (query:string) => setSearchQuery(query);
+
+    useEffect(()=>{
+      onSearch(searchQuery)
+    },[searchQuery])
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Headers</Text>
-        </View>
+        <HeaderContainer  >
+            <Searchbar
+                placeholder="Start searching ..."
+                onChangeText={onChangeSearch}
+                value={searchQuery}
+            />
+        </HeaderContainer>
     );
 };
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: colors.bg,
-        paddingVertical: spacing._lg
-    },
-    title: {
-        color: colors.title
-    }
-});
+const HeaderContainer = styled.View`
+    padding:${props=>props.theme.spacing._md};
+`
 
 export default Headers;
