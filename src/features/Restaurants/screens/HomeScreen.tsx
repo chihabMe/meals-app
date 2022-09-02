@@ -1,73 +1,71 @@
-import { View, Text, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import RestaurantsList from '../components/RestaurantsList';
+import { FlatList, Pressable, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
 import Header from '../../../components/Layout/Header/Header';
-import Restaurant from '../../../models/Restaurant';
 import styled from 'styled-components/native';
+import { RestaurantsContext } from '../../../services/restaurants/restaurantsContext';
+import Button from '../../../components/UI/Button';
+import Spinner from '../../../components/UI/Spinner';
+import RestaurantItem from '../components/RestaurantItem';
 
-const dummy: Restaurant[] = [
-    {
-        name: 'cool',
-        rating: 5,
-        id: '1',
-        images: ['https://picsum.photos/400/400'],
-        isOpenNow: true,
-        openingHours: '7am -> 10pm'
-    },
-    {
-        name: 'fast food',
-        rating: 4.5,
-        id: '2',
-        images: ['https://picsum.photos/400/400'],
-        isOpenNow: false,
-        openingHours: '7am -> 7pm'
-    },
-    {
-        name: 'arabic food ',
-        rating: 4.2,
-        id: '3',
-        images: ['https://picsum.photos/400/400'],
-        isOpenNow: false,
-        openingHours: '7am -> 7pm'
-        },
-    {
-        name: 'fast food 2 ',
-        rating: 3.5,
-        id: '4',
-        images: ['https://picsum.photos/400/400'],
-        isOpenNow: false,
-        openingHours: '7am -> 7pm'
-    }
-];
-const HomePage: React.FC = () => {
+const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [query, setQuery] = useState<string>('');
-    const [restaurants, setRestaurants] = useState<Restaurant[]>(dummy);
+    const { isLoading, error, restaurants } = useContext(RestaurantsContext);
+    console.log(restaurants);
     const onSearch = (text: string) => {
         console.log('searching', text);
-        if (text == '') {
-            setRestaurants(dummy);
-            return;
-        }
-        setRestaurants((prev) =>
-            dummy.filter((item) => item.name.includes(text.toLowerCase()))
-        );
+        // if (text == '') {
+        //     setRestaurants(dummy);
+        //     return;
+        // }
+        // setRestaurants((prev) => //     dummy.filter((item) => item.name.includes(text.toLowerCase())) // ); };
     };
+    const { loadRestaurants } = useContext(RestaurantsContext);
     return (
         <>
             <Header onSearch={onSearch} />
-          <HomeContainer>
-
-            <RestaurantsList restaurants={restaurants} />
-        </HomeContainer>
+            <HomeContainer>
+                {!isLoading && (
+                    <Button onPress={loadRestaurants} text="reload">
+                        reload
+                    </Button>
+                )}
+                {!isLoading && restaurants && (
+                    <RestaurantsListContainer
+                        renderItem={(item, index) => {
+                            return (
+                                <TouchableOpacity activeOpacity={0.7} onPress={()=>{navigation.navigate("RestaurantDetail")}}>
+                                    <RestaurantItem
+                                        key={item.name}
+                                        item={item}
+                                        index={index}
+                                    />
+                                </TouchableOpacity>
+                            );
+                        }}
+                        data={restaurants}
+                        keyExtractor={(item) => item.id}
+                    />
+                )}
+                {isLoading && <Spinner />}
+            </HomeContainer>
         </>
     );
 };
 export default HomePage;
 const HomeContainer = styled.View`
-        flex-direction: column;
-        flex-grow:1;
-        background-color:${props=>props.theme.bg};
-        padding:${props=>props.theme.spacing._md };
-`
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: ${(props) => props.theme.bg};
+    padding: ${(props) => props.theme.spacing._md};
+`;
 
-
+const RestaurantsListContainer = styled(FlatList).attrs({
+    contentContainerStyle: {
+        padding: 10
+    }
+})`
+    margin: 0 auto;
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+`;

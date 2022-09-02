@@ -6,20 +6,21 @@ import styled from 'styled-components/native';
 import { StarIcon } from 'react-native-heroicons/solid';
 
 
-const RestaurantItem: React.FC<{ separators:any,index:number,item: Restaurant }> = ({
+const RestaurantItem: React.FC<{ separators?:any,index:number,item: Restaurant }> = ({
     item,index,separators
 
 }) => {
-    const { name, images, isOpenNow, openingHours, id, rating } = item;
+    const { name, images, openNow, openingHours, id, rating } = item;
     const numberOfIterations = Math.floor(rating);
     const stars = []
        for(let i =1;i<=numberOfIterations;i++){
         stars.push(<StarIcon color='yellow' size={15} />)
     }
+    console.log(item)
     return (
         <ItemContainer>
             <ItemCard>
-                <ItemCardImage source={{ uri: images[0] }} />
+                <ItemCardImage source={{ uri: images?images[0]:"https://picsum.photos/300/300" }} />
                 <Card.Content>
                     <ItemCardTitle>{name} </ItemCardTitle>
                     <ItemStarsRating>
@@ -28,7 +29,7 @@ const RestaurantItem: React.FC<{ separators:any,index:number,item: Restaurant }>
                     <ItemCardText>
                         {' '}
                         {openingHours}{' '}
-                        {isOpenNow ? 'its open now' : 'its closed now'}{' '}
+                        {openNow ? 'its open now' : 'its closed now'}{' '}
                     </ItemCardText>
                 </Card.Content>
                 <Card.Actions>

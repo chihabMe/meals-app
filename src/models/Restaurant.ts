@@ -3,8 +3,10 @@ type Restaurant = {
     name:string,
     id:string,
     images:string[],
-    isOpenNow:boolean,
+    openNow:boolean,
     openingHours:string,
     rating:number,
+    userRatingTotal:number,
+    vicinity:string,
 }
 export default Restaurant ;
